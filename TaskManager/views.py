@@ -1,10 +1,22 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.core.validators import validate_email, ValidationError
-from TaskManager.models import UserProfile
+from TaskManager.models import UserProfile, Token
 
 import datetime
 import hashlib
+
+
+def token_to_user(token):
+    tokens = Token.objects.filter(token=token)
+    if len(tokens) == 0:
+        return None
+
+    current_token = tokens.first()
+    if current_token.expires < datetime.datetime.now():
+        return None
+
+    return current_token.user
 
 
 def index(request):
@@ -37,6 +49,15 @@ def user_data(request):
         return JsonResponse(result)
     found_user = users[0]
     user_result = {}
+    # Generate token
+    token = Token.objects.filter(user=found_user)
+    if not len(token) == 0:
+        token[0].delete()
+    token = Token(user=found_user, expires=datetime.datetime.now() + datetime.timedelta(days=30),
+                  token=hashlib.md5((datetime.datetime.now().__str__() + found_user.name).encode()).hexdigest())
+    token.save()
+
+    # Prepare response
     if found_user.password == password:
         user_result['name'] = found_user.name
         user_result['email'] = found_user.email
