@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.core.validators import validate_email, ValidationError
-from TaskManager.models import UserProfile, Token
+from django.utils import timezone
+from TaskManager.models import UserProfile, Token, Project
 
 import datetime
 import hashlib
@@ -13,7 +14,7 @@ def token_to_user(token):
         return None
 
     current_token = tokens.first()
-    if current_token.expires < datetime.datetime.now():
+    if current_token.expires < timezone.now():
         return None
 
     return current_token.user
@@ -53,8 +54,10 @@ def user_data(request):
     token = Token.objects.filter(user=found_user)
     if not len(token) == 0:
         token[0].delete()
-    token = Token(user=found_user, expires=datetime.datetime.now() + datetime.timedelta(days=30),
-                  token=hashlib.md5((datetime.datetime.now().__str__() + found_user.name).encode()).hexdigest())
+
+    generated_token = hashlib.md5((datetime.datetime.now().__str__() + found_user.name).encode()).hexdigest()
+    token = Token(user=found_user, expires=timezone.now() + timezone.timedelta(days=30),
+                  token=generated_token)
     token.save()
 
     # Prepare response
@@ -63,8 +66,57 @@ def user_data(request):
         user_result['email'] = found_user.email
         user_result['registration_date'] = found_user.register_date
         user_result['language'] = found_user.lang
+        user_result['generated_token'] = generated_token
         result = {'result': 'success', 'user': user_result}
 
+    return JsonResponse(result)
+
+
+def add_project(request):
+    token = request.POST.get("token")
+
+    if token is None:
+        return HttpResponseBadRequest()
+
+    user = token_to_user(token)
+    if user is None:
+        return HttpResponseBadRequest()
+
+    name = request.POST.get("name")
+    description = request.POST.get("description")
+
+    if name is None or description is None:
+        return HttpResponseBadRequest()
+
+    description = description.strip()
+    name = name.strip()
+
+    if len(name) < 3 or len(name) > 30:
+        return JsonResponse({'result': 'error', 'error_code': 7})
+
+    if len(Project.objects.filter(name=name)) > 0:
+        return JsonResponse({'result': 'error', 'error_code': 6})
+
+    project = Project(name=name, description=description, created=timezone.now(), owner=user)
+    project.save()
+    return JsonResponse({'result': 'success'})
+
+
+def projects(request):
+    token = request.POST.get("token")
+
+    if token is None:
+        return HttpResponseBadRequest()
+
+    user = token_to_user(token)
+    if user is None:
+        return HttpResponseBadRequest()
+
+    result = {}
+    array = []
+    for project in Project.objects.filter(owner=user):
+        array.append(project.name)
+    result['items'] = array
     return JsonResponse(result)
 
 

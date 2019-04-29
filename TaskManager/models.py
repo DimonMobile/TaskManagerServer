@@ -19,8 +19,7 @@ class UserProfile(models.Model):
 
 
 class Project(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, primary_key=True)
     description = models.CharField(max_length=4096)
     created = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
@@ -35,7 +34,7 @@ class Project(models.Model):
 
 
 class Token(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(UserProfile, on_delete=models.CASCADE, primary_key=True)
     token = models.CharField(max_length=32)
     expires = models.DateTimeField()
 
