@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed, HttpResponseBadRequest
+from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponseForbidden
 from django.core.validators import validate_email, ValidationError
 from django.utils import timezone
 from TaskManager.models import UserProfile, Token, Project
@@ -70,6 +70,35 @@ def user_data(request):
         result = {'result': 'success', 'user': user_result}
 
     return JsonResponse(result)
+
+
+def remove_project(request):
+    token = request.POST.get('token')
+
+    if token is None:
+        return HttpResponseBadRequest()
+
+    user = token_to_user(token)
+    if user is None:
+        return HttpResponseBadRequest()
+
+    project_name = request.POST.get('project_name')
+
+    if project_name is None:
+        return HttpResponseBadRequest()
+
+    projects = Project.objects.filter(name=project_name)
+    if len(projects) == 0:
+        return HttpResponseBadRequest()
+
+    current_project = projects.first()
+
+    if not current_project.owner == user:
+        return HttpResponseForbidden("No permissions")
+
+    current_project.delete()
+    return JsonResponse({'result': 'success'})
+
 
 
 def add_project(request):
