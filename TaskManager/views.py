@@ -100,7 +100,6 @@ def remove_project(request):
     return JsonResponse({'result': 'success'})
 
 
-
 def add_project(request):
     token = request.POST.get("token")
 
