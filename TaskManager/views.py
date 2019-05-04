@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponseForbidden
 from django.core.validators import validate_email, ValidationError
 from django.utils import timezone
-from TaskManager.models import UserProfile, Token, Project
+from TaskManager.models import *
 
 import datetime
 import hashlib
@@ -185,3 +185,53 @@ def register(request):
 
     return JsonResponse(response)
 
+
+def create_issue(request):
+    if not request.method == "POST":
+        return HttpResponseNotAllowed()
+
+    token = request.POST.get("token")
+
+    if token is None:
+        return HttpResponseBadRequest()
+
+    user = token_to_user(token)
+    if user is None:
+        return HttpResponseBadRequest()
+
+    issue_name = request.POST.get("name")
+    issue_description = request.POST.get("description")
+    issue_estimate = request.POST.get("estimate")
+    issue_project = request.POST.get("project")
+    issue_type = request.POST.get("type")
+
+    if issue_name is None or issue_description is None or issue_estimate is None or\
+            issue_project is None or issue_type is None:
+        return HttpResponseBadRequest()
+
+    issue_name = issue_name.strip()
+    issue_description = issue_description.strip()
+    issue_estimate = issue_estimate.strip()
+    issue_project = issue_project.strip()
+    issue_type = int(issue_type.strip())
+
+    if len(issue_name) < 3 or len(issue_name) > 128:
+        return JsonResponse({'result': 'error', 'error_code': 8})  # invalid issue name length
+
+    if len(issue_description) > 4096:
+        return JsonResponse({'result': 'error', 'error_code': 9})  # invalid issue description length
+
+    if int(issue_estimate) < 0:
+        return JsonResponse({'result': 'error', 'error_code': 10})  # issue estimate must have positive length
+
+    projects_dictionary = Project.objects.filter(name=issue_project)
+    if len(projects_dictionary) == 0:
+        return JsonResponse({'result': 'error', 'error_code': 11})  # project is not exists
+
+    issue = Issue(name=issue_name, description=issue_description, estimate=issue_estimate, creator=user, assignee=None
+                  , project=projects_dictionary.first(), issue_type=issue_type)
+
+    issue.save()
+    if issue.id is None:
+        return JsonResponse({'result': 'error', 'error_code': 12})  # unexpected error
+    return JsonResponse({'result': 'success', 'id': issue.id})

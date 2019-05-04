@@ -9,5 +9,6 @@ urlpatterns = [
     path('user_data', views.user_data),
     path('projects', views.projects),
     path('add_project', views.add_project),
-    path('remove_project', views.remove_project)
+    path('remove_project', views.remove_project),
+    path('create_issue', views.create_issue)
 ]
