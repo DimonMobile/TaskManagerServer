@@ -228,6 +228,9 @@ def create_issue(request):
     if len(projects_dictionary) == 0:
         return JsonResponse({'result': 'error', 'error_code': 11})  # project is not exists
 
+    if not projects_dictionary.first().owner == user:
+        return JsonResponse({'result': 'error', 'error_code': 13})  # access denied
+
     issue = Issue(name=issue_name, description=issue_description, estimate=issue_estimate, creator=user, assignee=None
                   , project=projects_dictionary.first(), issue_type=issue_type)
 
