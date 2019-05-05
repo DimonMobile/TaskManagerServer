@@ -238,3 +238,83 @@ def create_issue(request):
     if issue.id is None:
         return JsonResponse({'result': 'error', 'error_code': 12})  # unexpected error
     return JsonResponse({'result': 'success', 'id': issue.id})
+
+
+def get_issues(request):
+    if not request.method == "POST":
+        return HttpResponseNotAllowed()
+
+    issue_status = request.POST.get("status")
+    issue_type = request.POST.get("type")
+    issue_variant = request.POST.get("variant")
+    issue_search_string = request.POST.get("s")
+    token = request.POST.get("token")
+
+    if issue_status is None or issue_type is None or issue_variant is None or token is None or\
+            issue_search_string is None:
+        return HttpResponseBadRequest()
+
+    user = token_to_user(token)
+    if user is None:
+        return HttpResponseForbidden()
+
+    issue_status = int(issue_status.strip())
+    issue_type = int(issue_type.strip())
+    issue_variant = int(issue_variant.strip())
+    issue_search_string = issue_search_string.strip()
+
+    result_query_set = Issue.objects
+
+    if issue_status == 1:  # open issues
+        result_query_set = result_query_set.filter(status=0)
+    elif issue_status == 2:  # resolved issues
+        result_query_set = result_query_set.filter(status=1)
+
+    if issue_variant == 1:  # assigned to user
+        result_query_set = result_query_set.filter(assignee=user)
+    elif issue_variant == 2:
+        result_query_set = result_query_set.filter(creator=user)
+
+    if issue_type == 1:
+        result_query_set = result_query_set.filter(issue_type=0)
+    elif issue_type == 2:
+        result_query_set = result_query_set.filter(issue_type=1)
+
+    if len(issue_search_string) > 0:
+        result_query_set = result_query_set.filter(name__contains=issue_search_string)
+
+    items_count = result_query_set.count()
+
+    result_query_set = result_query_set.all()[:200]
+
+    result_array = []
+    for issue in result_query_set:
+        issue_item = {
+            'id': issue.id,
+            'name': issue.name,
+            'estimate': issue.estimate,
+            'description': issue.description,
+            'project_name': issue.project.name,
+            'issue_type': issue.issue_type,
+            'created': issue.created,
+            'resolved': issue.resolved,
+            'progress': issue.progress,
+        }
+        issue_creator = {
+            'id': issue.creator.id,
+            'name': issue.creator.name,
+            'email': issue.creator.email
+        }
+        if issue.assignee is None:
+            issue_assignee = None
+        else:
+            issue_assignee = {
+                'id': issue.assignee.id,
+                'name': issue.assignee.name,
+                'email': issue.assignee.email
+            }
+        issue_item['creator'] = issue_creator
+        issue_item['assignee'] = issue_assignee
+        result_array.append(issue_item)
+
+    return JsonResponse({'result': 'success', 'count': items_count, 'items': result_array})

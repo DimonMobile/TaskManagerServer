@@ -51,6 +51,7 @@ class Issue(models.Model):
     id = models.AutoField(primary_key=True, null=False)
     creator = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=False, related_name='issue_creator')
     estimate = models.IntegerField(null=False)
+    progress = models.IntegerField(null=False, default=0)
     assignee = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, related_name='issue_assignee')
     name = models.CharField(max_length=128)
     description = models.CharField(max_length=4096)
