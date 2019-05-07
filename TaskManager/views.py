@@ -293,11 +293,12 @@ def get_issues(request):
             'id': issue.id,
             'name': issue.name,
             'estimate': issue.estimate,
-            'description': issue.description,
+            # 'description': issue.description,  # unnecessary in preview
             'project_name': issue.project.name,
             'issue_type': issue.issue_type,
-            'created': issue.created,
-            'resolved': issue.resolved,
+            # 'created': issue.created,
+            # 'resolved': issue.resolved,
+            'status': issue.status,
             'progress': issue.progress,
         }
         issue_creator = {
