@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed, HttpResponseBadRequest, HttpResponseForbidden
+from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed, HttpResponseBadRequest, \
+    HttpResponseForbidden, Http404
 from django.core.validators import validate_email, ValidationError
 from django.utils import timezone
 from TaskManager.models import *
@@ -240,6 +241,101 @@ def create_issue(request):
     return JsonResponse({'result': 'success', 'id': issue.id})
 
 
+def assign_issue(request):
+    if not request.method == 'POST':
+        return HttpResponseNotAllowed()
+
+    token = request.POST.get('token')
+    issue_id = request.POST.get('id')
+    assignee_email = request.POST.get('assignee')
+
+    if token is None or issue_id is None or assignee_email is None:
+        return HttpResponseBadRequest()
+
+    issue_id = int(issue_id.strip())
+    assignee_email = assignee_email.strip().lower()
+
+    current_user = token_to_user(token)
+    if current_user is None:
+        return HttpResponseForbidden()
+
+    issues = Issue.objects.filter(id=issue_id)
+    if len(issues) == 0:
+        return Http404()
+
+    current_issue = issues.first()
+    if not current_issue.creator == current_user:
+        return HttpResponseForbidden()
+
+    found_users = UserProfile.objects.filter(email__contains=assignee_email)
+    if len(found_users) == 0:
+        return JsonResponse({'result': 'error', 'error_code': 14})  # User not found
+    elif len(found_users) > 1:
+        return JsonResponse({'result': 'error', 'error_code': 15})  # Too many users
+    else:
+        found_user = found_users.first()
+        current_issue.assignee = found_user
+        current_issue.save()
+        can_edit = current_issue.creator == current_user
+        can_log = current_issue.assignee == current_user
+        return JsonResponse({'result': 'success', 'user_email': found_user.email, 'can_edit': can_edit,
+                             'can_log': can_log})
+
+
+def get_issue(request):
+    if not request.method == 'POST':
+        return HttpResponseNotAllowed()
+
+    token = request.POST.get('token')
+    issue_id = request.POST.get('id')
+
+    if token is None or issue_id is None:
+        return HttpResponseBadRequest()
+
+    issue_id = int(issue_id.strip())
+
+    current_user = token_to_user(token)
+    if current_user is None:
+        return HttpResponseForbidden()
+
+    issues = Issue.objects.filter(id=issue_id)
+    if len(issues) == 0:
+        return Http404()
+
+    issue = issues.first()
+
+    issue_item = {
+        'id': issue.id,
+        'name': issue.name,
+        'estimate': issue.estimate,
+        'description': issue.description,
+        'project_name': issue.project.name,
+        'issue_type': issue.issue_type,
+        'created': str(issue.created),
+        'resolved': issue.resolved,
+        'status': issue.status,
+        'progress': issue.progress,
+        'can_edit': issue.creator == current_user,
+        'can_log': issue.assignee == current_user
+    }
+    issue_creator = {
+        'id': issue.creator.id,
+        'name': issue.creator.name,
+        'email': issue.creator.email
+    }
+    if issue.assignee is None:
+        issue_assignee = None
+    else:
+        issue_assignee = {
+            'id': issue.assignee.id,
+            'name': issue.assignee.name,
+            'email': issue.assignee.email
+        }
+    issue_item['creator'] = issue_creator
+    issue_item['assignee'] = issue_assignee
+    return JsonResponse({'result': 'success', 'issue': issue_item})
+
+
 def get_issues(request):
     if not request.method == "POST":
         return HttpResponseNotAllowed()
@@ -319,3 +415,143 @@ def get_issues(request):
         result_array.append(issue_item)
 
     return JsonResponse({'result': 'success', 'count': items_count, 'items': result_array})
+
+
+def log_work(request):
+    if not request.method == 'POST':
+        return HttpResponseNotAllowed()
+
+    token = request.POST.get('token')
+    issue_id = request.POST.get('id')
+    time = request.POST.get('time')
+
+    if token is None or issue_id is None or time is None:
+        return HttpResponseBadRequest()
+
+    issue_id = int(issue_id.strip())
+
+    current_user = token_to_user(token)
+    if current_user is None:
+        return HttpResponseForbidden()
+
+    issues = Issue.objects.filter(id=issue_id)
+    if len(issues) == 0:
+        return Http404()
+
+    issue = issues.first()
+    if not issue.assignee == current_user:
+        return HttpResponseForbidden()
+
+    time = int(time.strip())
+
+    if time < 0:
+        return HttpResponseBadRequest()
+
+    issue.progress += time
+    issue.save()
+
+    return JsonResponse({'result': 'success', 'summary': issue.progress})
+
+
+def project_statistics(request):
+    project_name = request.POST.get('project')
+
+    if project_name is None:
+        return HttpResponseBadRequest()
+
+    project_name = project_name.strip()
+
+    projects = Project.objects.filter(name=project_name)
+    if len(projects) == 0:
+        return Http404()
+
+    current_project = projects.first()
+    issues = Issue.objects.filter(project=current_project, status=1)  # resolved issues for current project
+    resolved_count = len(issues)
+    open_count = len(Issue.objects.filter(project=current_project, status=0))
+    response_array = []
+    for issue in issues:
+        item = {
+            'real': (issue.resolved - issue.created).seconds / 60,
+            'estimated': issue.estimate * 60,
+            'logged': issue.progress * 60,
+            'name': issue.id
+        }
+        response_array.append(item)
+
+    return JsonResponse({
+        'result': 'success',
+        'chart1_items': response_array,
+        'chart2': {
+            'resolved': resolved_count,
+            'open': open_count}
+    })
+
+
+def switch_status(request):
+    if not request.method == 'POST':
+        return HttpResponseNotAllowed()
+
+    token = request.POST.get('token')
+    issue_id = request.POST.get('id')
+    status = request.POST.get('status')
+
+    if token is None or issue_id is None or status is None:
+        return HttpResponseBadRequest()
+
+    issue_id = int(issue_id.strip())
+
+    current_user = token_to_user(token)
+    if current_user is None:
+        return HttpResponseForbidden()
+
+    issues = Issue.objects.filter(id=issue_id)
+    if len(issues) == 0:
+        return Http404()
+
+    issue = issues.first()
+    if not issue.creator == current_user and not issue.assignee == current_user:
+        return HttpResponseForbidden()
+
+    status = int(status.strip())
+
+    issue.status = status
+    issue.resolved = timezone.now()
+    issue.save()
+    return JsonResponse({'result': 'success', 'status': issue.status})
+
+
+def re_estimate(request):
+    if not request.method == 'POST':
+        return HttpResponseNotAllowed()
+
+    token = request.POST.get('token')
+    issue_id = request.POST.get('id')
+    time = request.POST.get('time')
+
+    if token is None or issue_id is None or time is None:
+        return HttpResponseBadRequest()
+
+    issue_id = int(issue_id.strip())
+
+    current_user = token_to_user(token)
+    if current_user is None:
+        return HttpResponseForbidden()
+
+    issues = Issue.objects.filter(id=issue_id)
+    if len(issues) == 0:
+        return Http404()
+
+    issue = issues.first()
+    if not issue.creator == current_user:
+        return HttpResponseForbidden()
+
+    time = int(time.strip())
+
+    if time < 0:
+        return HttpResponseBadRequest()
+
+    issue.estimate = time
+    issue.save()
+
+    return JsonResponse({'result': 'success', 'summary': issue.estimate})

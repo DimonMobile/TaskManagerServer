@@ -57,9 +57,9 @@ class Issue(models.Model):
     description = models.CharField(max_length=4096)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     issue_type = models.IntegerField(null=False)
-    created = models.TimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(null=False, default=0)
-    resolved = models.TimeField(null=True)
+    resolved = models.DateTimeField(null=True)
 
     def __str__(self):
         return self.name
