@@ -2,12 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="622f106c-cbd1-49f0-a3fe-1514f01d8007" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/TaskManagerServer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/TaskManagerServer.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TaskManager/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/TaskManager/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TaskManager/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/TaskManager/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TaskManager/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/TaskManager/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TaskManagerServer/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/TaskManagerServer/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.idea/httpRequests/" />
@@ -60,8 +58,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TaskManager/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="870">
-              <caret line="58" column="48" selection-start-line="58" selection-start-column="48" selection-end-line="58" selection-end-column="48" />
+            <state relative-caret-position="312">
+              <caret line="47" selection-start-line="47" selection-end-line="47" />
             </state>
           </provider>
         </entry>
@@ -69,8 +67,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TaskManager/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="19" column="55" selection-start-line="19" selection-start-column="55" selection-end-line="19" selection-end-column="55" />
+            <state relative-caret-position="270">
+              <caret line="20" column="55" selection-start-line="20" selection-start-column="55" selection-end-line="20" selection-end-column="55" />
             </state>
           </provider>
         </entry>
@@ -96,8 +94,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/TaskManager/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="565">
-              <caret line="487" column="6" lean-forward="true" selection-start-line="487" selection-start-column="6" selection-end-line="487" selection-end-column="6" />
+            <state relative-caret-position="465">
+              <caret line="157" lean-forward="true" selection-start-line="157" selection-end-line="157" />
               <folding>
                 <element signature="e#0#35#0" expanded="true" />
               </folding>
@@ -108,8 +106,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TaskManagerServer/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
+            <state relative-caret-position="555">
+              <caret line="37" column="14" lean-forward="true" selection-start-line="37" selection-start-column="14" selection-end-line="37" selection-end-column="14" />
             </state>
           </provider>
         </entry>
@@ -141,17 +139,17 @@
         <option value="$PROJECT_DIR$/TaskManager/validators.py" />
         <option value="$APPLICATION_CONFIG_DIR$/scratches/rest-api_1.http" />
         <option value="$PROJECT_DIR$/TaskManager/models.py" />
-        <option value="$PROJECT_DIR$/TaskManager/urls.py" />
         <option value="$PROJECT_DIR$/TaskManagerServer/settings.py" />
+        <option value="$PROJECT_DIR$/TaskManager/urls.py" />
         <option value="$PROJECT_DIR$/TaskManager/views.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-332" />
-    <option name="y" value="48" />
-    <option name="width" value="1378" />
-    <option name="height" value="995" />
+    <option name="x" value="311" />
+    <option name="y" value="108" />
+    <option name="width" value="1368" />
+    <option name="height" value="993" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -571,7 +569,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="launchJavascriptDebuger" value="false" />
       <option name="port" value="8000" />
-      <option name="host" value="127.0.0.1" />
+      <option name="host" value="192.168.43.118" />
       <option name="additionalOptions" value="" />
       <option name="browserUrl" value="" />
       <option name="runTestServer" value="false" />
@@ -613,11 +611,16 @@
       <workItem from="1557150188385" duration="5151000" />
       <workItem from="1557307626526" duration="16652000" />
       <workItem from="1557418925432" duration="3651000" />
+      <workItem from="1557435460418" duration="165000" />
+      <workItem from="1557814154143" duration="804000" />
+      <workItem from="1558000035887" duration="1204000" />
+      <workItem from="1558005430341" duration="1595000" />
+      <workItem from="1558082917858" duration="3288000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="96194000" />
+    <option name="totallyTimeSpent" value="103250000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -630,13 +633,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="-1" width="1920" height="1040" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20010673" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21077909" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3297062" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.279476" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.279476" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -709,13 +713,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/venv/lib/python3.7/site-packages/django/db/models/fields/__init__.py" />
-    <entry file="das://9575d287-c352-459a-bb5d-39528211ad2d/schema/main/table/TaskManager_userprofile">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/TaskManager/validators.py" />
     <entry file="file://$PROJECT_DIR$/TaskManager/migrations/0001_initial.py">
       <provider selected="true" editor-type-id="text-editor" />
@@ -733,17 +730,31 @@
     </entry>
     <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/rest-api.http" />
     <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/rest-api_1.http" />
+    <entry file="das://9575d287-c352-459a-bb5d-39528211ad2d/schema/main/table/TaskManager_userprofile">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/TaskManager/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="870">
-          <caret line="58" column="48" selection-start-line="58" selection-start-column="48" selection-end-line="58" selection-end-column="48" />
+        <state relative-caret-position="312">
+          <caret line="47" selection-start-line="47" selection-end-line="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TaskManagerServer/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="555">
+          <caret line="37" column="14" lean-forward="true" selection-start-line="37" selection-start-column="14" selection-end-line="37" selection-end-column="14" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/TaskManager/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="19" column="55" selection-start-line="19" selection-start-column="55" selection-end-line="19" selection-end-column="55" />
+        <state relative-caret-position="270">
+          <caret line="20" column="55" selection-start-line="20" selection-start-column="55" selection-end-line="20" selection-end-column="55" />
         </state>
       </provider>
     </entry>
@@ -761,17 +772,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/TaskManagerServer/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/TaskManager/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="565">
-          <caret line="487" column="6" lean-forward="true" selection-start-line="487" selection-start-column="6" selection-end-line="487" selection-end-column="6" />
+        <state relative-caret-position="465">
+          <caret line="157" lean-forward="true" selection-start-line="157" selection-end-line="157" />
           <folding>
             <element signature="e#0#35#0" expanded="true" />
           </folding>

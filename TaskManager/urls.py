@@ -17,5 +17,6 @@ urlpatterns = [
     path('log_work', views.log_work),
     path('re_estimate', views.re_estimate),
     path('switch_status', views.switch_status),
-    path('project_statistics', views.project_statistics)
+    path('project_statistics', views.project_statistics),
+    path('profile_statistics', views.profile_statistics)
 ]

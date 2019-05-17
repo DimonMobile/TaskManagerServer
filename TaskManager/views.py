@@ -146,6 +146,16 @@ def projects(request):
     for project in Project.objects.filter(owner=user):
         array.append(project.name)
     result['items'] = array
+
+    created_count = Issue.objects.filter(creator=user).count()
+    assigned_count = Issue.objects.filter(assignee=user).count()
+    assigned_feature = Issue.objects.filter(assignee=user, issue_type=0).count()
+    assigned_bug = Issue.objects.filter(assignee=user, issue_type=1).count()
+    result['created_count'] = created_count
+    result['assigned_count'] = assigned_count
+    result['assigned_feature'] = assigned_feature
+    result['assigned_bug'] = assigned_bug
+
     return JsonResponse(result)
 
 
@@ -555,3 +565,24 @@ def re_estimate(request):
     issue.save()
 
     return JsonResponse({'result': 'success', 'summary': issue.estimate})
+
+
+def profile_statistics(request):
+    if not request.method == 'POST':
+        return HttpResponseNotAllowed()
+
+    token = request.POST.get('token')
+    if token is None:
+        return HttpResponseBadRequest()
+
+    current_user = token_to_user(token)
+    if current_user is None:
+        return HttpResponseForbidden()
+
+    created_count = Issue.objects.filter(creator=current_user).count()
+    assigned_count = Issue.objects.filter(assignee=current_user).count()
+    assigned_feature = Issue.objects.filter(assignee=current_user, issue_type=0).count()
+    assigned_bug = Issue.objects.filter(assignee=current_user, issue_type=1).count()
+
+    return JsonResponse({'result': 'success', 'created_count': created_count, 'assigned_count': assigned_count,
+                         'assigned_feature': assigned_feature, 'assigned_bug': assigned_bug})
